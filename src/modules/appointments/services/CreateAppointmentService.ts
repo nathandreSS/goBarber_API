@@ -1,6 +1,8 @@
 import { startOfHour } from 'date-fns';
-import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
 import { inject, injectable } from 'tsyringe';
+
+import Appointment from '@modules/appointments/infra/typeorm/entities/Appointment';
+import AppError from '@shared/errors/AppError';
 import IAppointmentsRepository from '../repositories/IAppointmentsRepository';
 
 interface IRequest {
@@ -18,7 +20,7 @@ class CreateAppointmentService {
 		const appointmentDate = startOfHour(date);
 
 		if (await this.appointmentsRepository.findByDate(appointmentDate))
-			throw Error('this appointment is already booked');
+			throw new AppError('this appointment is already booked', 400);
 
 		return this.appointmentsRepository.create({
 			provider_id,

@@ -1,9 +1,10 @@
 import { compare } from 'bcryptjs';
+import { injectable, inject } from 'tsyringe';
 import { sign } from 'jsonwebtoken';
+
 import User from '@modules/users/infra/typeorm/entities/User';
 import AppError from '@shared/errors/AppError';
 import authConfig from '@config/auth';
-import { injectable, inject } from 'tsyringe';
 import IUsersRepository from '../repositories/IUsersRepository';
 
 interface IRequest {
@@ -15,7 +16,7 @@ interface IResponse {
 	token: string;
 }
 @injectable()
-class UserAuthenticateSevice {
+class UserAuthenticateService {
 	constructor(
 		@inject('UsersRepository')
 		private usersRepository: IUsersRepository,
@@ -26,9 +27,10 @@ class UserAuthenticateSevice {
 		if (!user) {
 			throw new AppError('Invalid email/password combination.', 401);
 		}
+
 		const cryptedPassword = user.password;
 		const passwordMatched = await compare(password, cryptedPassword);
-
+		console.log(passwordMatched);
 		if (!passwordMatched) {
 			throw new AppError('Invalid email/password combination.', 401);
 		}
@@ -43,4 +45,4 @@ class UserAuthenticateSevice {
 	}
 }
 
-export default UserAuthenticateSevice;
+export default UserAuthenticateService;
